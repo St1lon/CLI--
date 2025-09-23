@@ -7,13 +7,13 @@ import (
 )
 
 type TaskManager struct {
-	tasks  map[int]*domain.Task
+	Tasks  map[int]*domain.Task
 	nextID int
 }
 
 func NewTaskManager() *TaskManager {
 	return &TaskManager{
-		tasks:  make(map[int]*domain.Task),
+		Tasks:  make(map[int]*domain.Task),
 		nextID: 1,
 	}
 }
@@ -32,27 +32,33 @@ func (tm *TaskManager) AddTask(description, status string) error {
 	task.SetCreatedAt(now)
 	task.SetUpdatedAt(now)
 
-	tm.tasks[tm.nextID] = task
+	tm.Tasks[tm.nextID] = task
 	tm.nextID++
 
 	return nil
 }
 
-func (tm *TaskManager) PrintTasks(){
-	if len(tm.tasks) == 0{
+func (tm *TaskManager) PrintTasks() {
+	if len(tm.Tasks) == 0 {
 		fmt.Println("Менеджер задач пустой")
 		return
 	}
-	for _, task := range tm.tasks {
-	if task == nil {
-		fmt.Println("Found nil task")
-		continue
-	}
+	for _, task := range tm.Tasks {
 		fmt.Println("Задача номер:", task.GetID())
 		fmt.Println("Описание задачи:", task.GetDescription())
 		fmt.Println("Статус задачи:", task.GetStatus())
 		fmt.Println("Время создания задачи:", task.GetCreatedAt())
 		fmt.Println("Время обновление задачи:", task.GetCreatedAt())
+		fmt.Println()
 	}
 }
- 
+
+// GetNextID возвращает следующий ID для новой задачи
+func (tm *TaskManager) GetNextID() int {
+	return tm.nextID
+}
+
+// SetNextID устанавливает следующий ID (для загрузки из JSON)
+func (tm *TaskManager) SetNextID(id int) {
+	tm.nextID = id
+}
