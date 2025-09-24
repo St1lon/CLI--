@@ -3,6 +3,7 @@ package storage
 import (
 	"cli-track/internal/application/services"
 	"cli-track/internal/domain"
+
 	//"cli-track/internal/infrastructure/storage"
 	"encoding/json"
 	"fmt"
@@ -55,9 +56,10 @@ func SaveToJson(tm *services.TaskManager) error {
 func LoadJson() (*services.TaskManager, error) {
 	filename := "tasks.json"
 	tm := services.NewTaskManager()
+	
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		fmt.Println("Файл tasks.json не найден, начинаем с пустого списка задач")
-		return nil, nil
+		return tm, nil
 	}
 
 	jsonData, err := os.ReadFile(filename)
@@ -78,6 +80,7 @@ func LoadJson() (*services.TaskManager, error) {
 		return nil, fmt.Errorf("ошибка парсинга JSON: %w", err)
 	}
 
+	// Очищаем Tasks для загрузки новых данных
 	tm.Tasks = make(map[int]*domain.Task)
 	maxID := 0
 

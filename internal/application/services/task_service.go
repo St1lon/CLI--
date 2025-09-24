@@ -2,6 +2,7 @@ package services
 
 import (
 	"cli-track/internal/domain"
+	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -20,6 +21,7 @@ func NewTaskManager() *TaskManager {
 }
 
 func (tm *TaskManager) AddTask(description, status string) error {
+	
 	task := &domain.Task{}
 	task.SetID(tm.nextID)
 	task.SetDescription(description)
@@ -38,6 +40,22 @@ func (tm *TaskManager) AddTask(description, status string) error {
 
 	return nil
 }
+
+func (tm *TaskManager) UpdateTask(id int, description string) error{
+	if id < 0{
+		return domain.ErrWrongID
+	}
+	task := tm.Tasks[id]
+	task.SetDescription(description)
+
+	now := time.Now()
+	task.SetUpdatedAt(now)
+
+	tm.Tasks[id] = task
+
+	return nil
+}
+
 
 func (tm *TaskManager) PrintTasks() {
 	if len(tm.Tasks) == 0 {

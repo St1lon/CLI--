@@ -1,23 +1,16 @@
 [
   {
     "id": 1,
-    "description": "vcccxc",
+    "description": "Первая задача в новом файле",
     "status": "to-do",
-    "createdAt": "2025-09-23T13:13:48.1006095+03:00",
-    "updatedAt": "2025-09-23T13:13:48.1006095+03:00"
+    "createdAt": "2025-09-24T13:24:28.1075676+03:00",
+    "updatedAt": "2025-09-24T13:24:28.1075676+03:00"
   },
   {
     "id": 2,
-    "description": "vnvvdscmvk",
-    "status": "to-do",
-    "createdAt": "2025-09-23T13:32:12.3171312+03:00",
-    "updatedAt": "2025-09-23T13:32:12.3171312+03:00"
-  },
-  {
-    "id": 3,
-    "description": "vs sc sc scvsdcmvk",
-    "status": "to-do",
-    "createdAt": "2025-09-23T13:32:22.8797698+03:00",
-    "updatedAt": "2025-09-23T13:32:22.8797698+03:00"
+    "description": "Вторая задача",
+    "status": "in-progress",
+    "createdAt": "2025-09-24T13:24:53.4476729+03:00",
+    "updatedAt": "2025-09-24T13:24:53.4476729+03:00"
   }
 ]
