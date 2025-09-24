@@ -3,6 +3,7 @@ package services
 import (
 	"cli-track/internal/domain"
 	"fmt"
+	"sort"
 	"time"
 )
 
@@ -43,12 +44,22 @@ func (tm *TaskManager) PrintTasks() {
 		fmt.Println("Менеджер задач пустой")
 		return
 	}
-	for _, task := range tm.Tasks {
+
+	// Собираем все ID и сортируем их
+	var ids []int
+	for id := range tm.Tasks {
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+
+	// Выводим задачи в отсортированном порядке
+	for _, id := range ids {
+		task := tm.Tasks[id]
 		fmt.Println("Задача номер:", task.GetID())
 		fmt.Println("Описание задачи:", task.GetDescription())
 		fmt.Println("Статус задачи:", task.GetStatus())
 		fmt.Println("Время создания задачи:", task.GetCreatedAt())
-		fmt.Println("Время обновление задачи:", task.GetCreatedAt())
+		fmt.Println("Время обновление задачи:", task.GetUpdatedAt()) // Исправлено: GetUpdatedAt вместо GetCreatedAt
 		fmt.Println()
 	}
 }
