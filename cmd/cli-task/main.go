@@ -17,8 +17,20 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "tasker",
-	Short: "Ваш список задач и целей",
-	Long:  `Утилита для менеджмента задач с функциями добавления удаления и изменения задач`,
+	Short: "CLI утилита для управления задачами",
+	Long: `Tasker CLI - Простая и мощная утилита для управления задачами
+
+Возможности:
+  • Добавление задач с различными статусами
+  • Просмотр задач с фильтрацией по статусам
+  • Обновление описаний и статусов задач
+  • Автоматическое сохранение в JSON файл
+
+Примеры использования:
+  tasker add "Изучить Go" "to-do"          # Добавить новую задачу
+  tasker list                              # Показать все задачи
+  tasker list-todo                         # Показать только задачи к выполнению
+  tasker update 1 "Изучить Go углубленно"  # Обновить описание задачи`,
 }
 
 func Execute() {
@@ -46,10 +58,24 @@ func init() {
 }
 
 var addCmd = &cobra.Command{
-	Use:   "add [description] [status]",
-	Short: "Добавляет новую задачу",
-	Long:  "Первый аргумент - описание задачи, второй аргумент - один из вариантов статуса задачи: 'to-do', 'in-progress', 'done'",
-	Args:  cobra.ExactArgs(2),
+	Use:   "add <описание> <статус>",
+	Short: "Добавить новую задачу",
+	Long: `Добавляет новую задачу в список
+
+Аргументы:
+  описание  Описание задачи (обязательно)
+  статус    Статус задачи (обязательно)
+
+Доступные статусы:
+  • to-do        - задача к выполнению
+  • in-progress  - задача в процессе выполнения  
+  • done         - выполненная задача
+
+Примеры:
+  tasker add "Купить молоко" "to-do"
+  tasker add "Написать отчет" "in-progress"
+  tasker add "Изучить Go" "done"`,
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskManager, err := storage.LoadJson()
 		if err != nil {
@@ -76,6 +102,18 @@ var addCmd = &cobra.Command{
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Показать все задачи",
+	Long: `Показывает все задачи из вашего списка
+
+Задачи отображаются с подробной информацией:
+  • ID задачи
+  • Описание
+  • Текущий статус
+  • Время создания и последнего обновления
+
+Для просмотра задач по конкретному статусу используйте:
+  tasker list-todo      - только задачи к выполнению
+  tasker list-progress  - только задачи в процессе
+  tasker list-done      - только выполненные задачи`,
 	Run: func(cmd *cobra.Command, args []string) {
 		taskManager, err := storage.LoadJson()
 		if err != nil {
@@ -95,7 +133,7 @@ var listDoneCmd = &cobra.Command{
 			fmt.Printf("Ошибка загрузки: %v\n", err)
 			return
 		}
-		taskManager.PrintTasksDone()
+		taskManager.PrintTasksFilter("done")
 	},
 }
 var listToDoCmd = &cobra.Command{
@@ -107,7 +145,7 @@ var listToDoCmd = &cobra.Command{
 			fmt.Printf("Ошибка загрузки: %v\n", err)
 			return
 		}
-		taskManager.PrintTasksDone()
+		taskManager.PrintTasksFilter("to-do")
 	},
 }
 
@@ -120,28 +158,38 @@ var listInprogressCmd = &cobra.Command{
 			fmt.Printf("Ошибка загрузки: %v\n", err)
 			return
 		}
-		taskManager.PrintTasksInProgress()
+		taskManager.PrintTasksFilter("in-progress")
 	},
 }
 
 var updateCmd = &cobra.Command{
-	Use:   "update",
+	Use:   "update <id> <новое_описание>",
 	Short: "Изменить описание задачи",
-	Args:  cobra.ExactArgs(2),
+	Long: `Обновляет описание существующей задачи
+
+Аргументы:
+  id               ID задачи для обновления
+  новое_описание   Новое описание задачи
+
+Пример:
+  tasker update 1 "Изучить Go более углубленно"
+  tasker update 2 "Купить молоко и хлеб"`,
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskManager, err := storage.LoadJson()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		val, err := strconv.Atoi(args[0]) 
+		val, err := strconv.Atoi(args[0])
 		if err != nil {
-    		fmt.Println(domain.ErrWrongID)
+			fmt.Println(domain.ErrWrongID)
 			return
 		}
 		err = taskManager.UpdateTask(val, args[1])
-		if err != nil{
+		if err != nil {
 			fmt.Println(err)
+			return
 		}
 		err = storage.SaveToJson(taskManager)
 		if err != nil {
@@ -154,23 +202,31 @@ var updateCmd = &cobra.Command{
 }
 
 var mark_in_progressCmd = &cobra.Command{
-Use:   "mark-in-progress",
-	Short: "Изменить статус задачи на 'in-progress'",
-	Args:  cobra.ExactArgs(1),
+	Use:   "mark-in-progress <id>",
+	Short: "Отметить задачу как выполняемую",
+	Long: `Изменяет статус задачи на 'in-progress' (в процессе выполнения)
+
+Аргументы:
+  id  ID задачи для изменения статуса
+
+Пример:
+  tasker mark-in-progress 1  # Отмечает задачу №1 как выполняемую`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskManager, err := storage.LoadJson()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		val, err := strconv.Atoi(args[0]) 
+		val, err := strconv.Atoi(args[0])
 		if err != nil {
-    		fmt.Println(domain.ErrWrongID)
+			fmt.Println(domain.ErrWrongID)
 			return
 		}
 		err = taskManager.Mark_in_progress(val)
-		if err != nil{
+		if err != nil {
 			fmt.Println(err)
+			return
 		}
 		err = storage.SaveToJson(taskManager)
 		if err != nil {
@@ -182,23 +238,31 @@ Use:   "mark-in-progress",
 }
 
 var mark_doneCmd = &cobra.Command{
-Use:   "mark-done",
-	Short: "Изменить статус задачи на 'done'",
-	Args:  cobra.ExactArgs(1),
+	Use:   "mark-done <id>",
+	Short: "Отметить задачу как выполненную",
+	Long: `Изменяет статус задачи на 'done' (выполнено)
+
+Аргументы:
+  id  ID задачи для изменения статуса
+
+Пример:
+  tasker mark-done 1  # Отмечает задачу №1 как выполненную`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskManager, err := storage.LoadJson()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		val, err := strconv.Atoi(args[0]) 
+		val, err := strconv.Atoi(args[0])
 		if err != nil {
-    		fmt.Println(domain.ErrWrongID)
+			fmt.Println(domain.ErrWrongID)
 			return
 		}
 		err = taskManager.Mark_done(val)
-		if err != nil{
+		if err != nil {
 			fmt.Println(err)
+			return
 		}
 		err = storage.SaveToJson(taskManager)
 		if err != nil {
@@ -210,30 +274,35 @@ Use:   "mark-done",
 }
 
 var deleteCmd = &cobra.Command{
-	Use:   "update",
-	Short: "Изменить описание задачи",
+	Use:   "delete [id]",
+	Short: "Удалить задачу",
+	Long:  "Удаляет задачу по её идентификатору (ID)",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskManager, err := storage.LoadJson()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("Ошибка загрузки: %v\n", err)
 			return
 		}
-		val, err := strconv.Atoi(args[0]) 
+
+		id, err := strconv.Atoi(args[0])
 		if err != nil {
-    		fmt.Println(domain.ErrWrongID)
+			fmt.Println("ID должен быть числом")
 			return
 		}
-		err = taskManager.DeleteTask(val)
-		if err != nil{
-			fmt.Println(err)
+
+		err = taskManager.DeleteTask(id)
+		if err != nil {
+			fmt.Printf("Ошибка удаления: %v\n", err)
+			return
 		}
+
 		err = storage.SaveToJson(taskManager)
 		if err != nil {
 			fmt.Printf("Ошибка сохранения: %v\n", err)
 			return
 		}
-		fmt.Println("Задача успешно удалена!")
 
+		fmt.Printf("Задача #%d успешно удалена!\n", id)
 	},
 }

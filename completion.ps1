@@ -7,6 +7,12 @@ Register-ArgumentCompleter -Native -CommandName 'tasker' -ScriptBlock {
     $commands = @(
         'add',
         'list',
+        'list-todo',
+        'list-in-progress',
+        'list-done',
+        'update',
+        'mark-in-progress',
+        'mark-done',
         'help'
     )
     
@@ -39,3 +45,12 @@ Register-ArgumentCompleter -Native -CommandName 'tasker' -ScriptBlock {
 }
 
 Write-Host "✅ Автодополнение для tasker активировано!" -ForegroundColor Green
+Write-Host "Доступные команды:" -ForegroundColor Cyan
+Write-Host "  tasker add <описание> <статус>" -ForegroundColor Gray
+Write-Host "  tasker list" -ForegroundColor Gray
+Write-Host "  tasker list-todo" -ForegroundColor Gray
+Write-Host "  tasker list-in-progress" -ForegroundColor Gray
+Write-Host "  tasker list-done" -ForegroundColor Gray
+Write-Host "  tasker update <id> <новое_описание>" -ForegroundColor Gray
+Write-Host "  tasker mark-in-progress <id>" -ForegroundColor Gray
+Write-Host "  tasker mark-done <id>" -ForegroundColor Gray

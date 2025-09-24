@@ -20,7 +20,6 @@ func SaveToJson(tm *services.TaskManager) error {
 		UpdatedAt   time.Time `json:"updatedAt"`
 	}
 
-	// Копируем данные из Task в промежуточную структуру
 	for _, task := range tm.Tasks {
 		temp := struct {
 			ID          int       `json:"id"`
@@ -38,13 +37,11 @@ func SaveToJson(tm *services.TaskManager) error {
 		tasks = append(tasks, temp)
 	}
 
-	// Сериализуем массив
 	jsonData, err := json.MarshalIndent(tasks, "", "  ")
 	if err != nil {
 		return fmt.Errorf("ошибка сериализации: %w", err)
 	}
 
-	// Записываем в файл
 	filename := "tasks.json"
 	if err := os.WriteFile(filename, jsonData, 0644); err != nil {
 		return fmt.Errorf("ошибка записи в файл: %w", err)
@@ -80,7 +77,6 @@ func LoadJson() (*services.TaskManager, error) {
 		return nil, fmt.Errorf("ошибка парсинга JSON: %w", err)
 	}
 
-	// Очищаем Tasks для загрузки новых данных
 	tm.Tasks = make(map[int]*domain.Task)
 	maxID := 0
 

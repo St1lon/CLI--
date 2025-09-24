@@ -4,7 +4,6 @@ import (
 	"cli-track/internal/domain"
 	//"errors"
 	"fmt"
-	"sort"
 	"time"
 )
 
@@ -45,6 +44,10 @@ func (tm *TaskManager) UpdateTask(id int, description string) error{
 	if id < 0{
 		return domain.ErrWrongID
 	}
+	if _, exists := tm.Tasks[id]; exists {
+    } else {
+        return domain.ErrNotExistKey
+    }
 	task := tm.Tasks[id]
 	task.SetDescription(description)
 
@@ -72,6 +75,10 @@ func (tm *TaskManager) Mark_in_progress(id int) error{
 	if id < 0{
 		return domain.ErrWrongID
 	}
+	if _, exists := tm.Tasks[id]; exists {
+    } else {
+        return domain.ErrNotExistKey
+    }
 	task := tm.Tasks[id]
 	task.SetStatus("in-progress")
 	now := time.Now()
@@ -86,6 +93,10 @@ func (tm *TaskManager) Mark_done(id int) error{
 	if id < 0{
 		return domain.ErrWrongID
 	}
+	if _, exists := tm.Tasks[id]; exists {
+    } else {
+        return domain.ErrNotExistKey
+    }
 	task := tm.Tasks[id]
 	task.SetStatus("done")
 	now := time.Now()
@@ -102,97 +113,30 @@ func (tm *TaskManager) PrintTasks() {
 		return
 	}
 
-	var ids []int
-	for id := range tm.Tasks {
-		ids = append(ids, id)
-	}
-	sort.Ints(ids)
+	ids := sortingId(tm)
 
 	for _, id := range ids {
 		task := tm.Tasks[id]
-		fmt.Println("Задача номер:", task.GetID())
-		fmt.Println("Описание задачи:", task.GetDescription())
-		fmt.Println("Статус задачи:", task.GetStatus())
-		fmt.Println("Время создания задачи:", task.GetCreatedAt())
-		fmt.Println("Время обновление задачи:", task.GetUpdatedAt())
-		fmt.Println()
+		printAllAreas(task)
 	}
 }
 
-func (tm *TaskManager) PrintTasksDone() {
+func (tm *TaskManager) PrintTasksFilter(status string) {
 	if len(tm.Tasks) == 0 {
 		fmt.Println("Менеджер задач пустой")
 		return
 	}
 
-	var ids []int
-	for id := range tm.Tasks {
-		ids = append(ids, id)
-	}
-	sort.Ints(ids)
+	ids := sortingId(tm)
 
 	for _, id := range ids {
-		if tm.Tasks[id].GetStatus() == "done"{
+		if tm.Tasks[id].GetStatus() == status{
 		task := tm.Tasks[id]
-		fmt.Println("Задача номер:", task.GetID())
-		fmt.Println("Описание задачи:", task.GetDescription())
-		fmt.Println("Статус задачи:", task.GetStatus())
-		fmt.Println("Время создания задачи:", task.GetCreatedAt())
-		fmt.Println("Время обновление задачи:", task.GetUpdatedAt())
-		fmt.Println()
+		printAllAreas(task)
 	}
 }
 }
 
-func (tm *TaskManager) PrintTasksInProgress() {
-	if len(tm.Tasks) == 0 {
-		fmt.Println("Менеджер задач пустой")
-		return
-	}
-
-	var ids []int
-	for id := range tm.Tasks {
-		ids = append(ids, id)
-	}
-	sort.Ints(ids)
-
-	for _, id := range ids {
-		if tm.Tasks[id].GetStatus() == "in-progress"{
-		task := tm.Tasks[id]
-		fmt.Println("Задача номер:", task.GetID())
-		fmt.Println("Описание задачи:", task.GetDescription())
-		fmt.Println("Статус задачи:", task.GetStatus())
-		fmt.Println("Время создания задачи:", task.GetCreatedAt())
-		fmt.Println("Время обновление задачи:", task.GetUpdatedAt())
-		fmt.Println()
-	}
-}
-}
-
-func (tm *TaskManager) PrintTasksToDo() {
-	if len(tm.Tasks) == 0 {
-		fmt.Println("Менеджер задач пустой")
-		return
-	}
-
-	var ids []int
-	for id := range tm.Tasks {
-		ids = append(ids, id)
-	}
-	sort.Ints(ids)
-
-	for _, id := range ids {
-		if tm.Tasks[id].GetStatus() == "to-do"{
-		task := tm.Tasks[id]
-		fmt.Println("Задача номер:", task.GetID())
-		fmt.Println("Описание задачи:", task.GetDescription())
-		fmt.Println("Статус задачи:", task.GetStatus())
-		fmt.Println("Время создания задачи:", task.GetCreatedAt())
-		fmt.Println("Время обновление задачи:", task.GetUpdatedAt())
-		fmt.Println()
-	}
-}
-}
 
 func (tm *TaskManager) GetNextID() int {
 	return tm.nextID
