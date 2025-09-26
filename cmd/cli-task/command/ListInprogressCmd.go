@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 var ListInprogressCmd = &cobra.Command{
 	Use:   "list-in-progress",
 	Short: "Показать задачи которые в прогрессе",

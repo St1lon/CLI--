@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 var MarkDoneCmd = &cobra.Command{
 	Use:   "mark-done <id>",
 	Short: "Отметить задачу как выполненную",

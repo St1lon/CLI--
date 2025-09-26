@@ -20,7 +20,7 @@ func NewTaskManager() *TaskManager {
 }
 
 func (tm *TaskManager) AddTask(description, status string) error {
-	
+
 	task := &domain.Task{}
 	task.SetID(tm.nextID)
 	task.SetDescription(description)
@@ -40,14 +40,14 @@ func (tm *TaskManager) AddTask(description, status string) error {
 	return nil
 }
 
-func (tm *TaskManager) UpdateTask(id int, description string) error{
-	if id < 0{
+func (tm *TaskManager) UpdateTask(id int, description string) error {
+	if id < 0 {
 		return domain.ErrWrongID
 	}
 	if _, exists := tm.Tasks[id]; exists {
-    } else {
-        return domain.ErrNotExistKey
-    }
+	} else {
+		return domain.ErrNotExistKey
+	}
 	task := tm.Tasks[id]
 	task.SetDescription(description)
 
@@ -59,26 +59,26 @@ func (tm *TaskManager) UpdateTask(id int, description string) error{
 	return nil
 }
 
-func (tm *TaskManager) DeleteTask(id int) error{
-	if id < 0{
+func (tm *TaskManager) DeleteTask(id int) error {
+	if id < 0 {
 		return domain.ErrWrongID
 	}
 	if _, exists := tm.Tasks[id]; exists {
-    	delete(tm.Tasks, id)
-    } else {
-        return domain.ErrNotExistKey
-    }
+		delete(tm.Tasks, id)
+	} else {
+		return domain.ErrNotExistKey
+	}
 	return nil
 }
 
-func (tm *TaskManager) Mark_in_progress(id int) error{
-	if id < 0{
+func (tm *TaskManager) Mark_in_progress(id int) error {
+	if id < 0 {
 		return domain.ErrWrongID
 	}
 	if _, exists := tm.Tasks[id]; exists {
-    } else {
-        return domain.ErrNotExistKey
-    }
+	} else {
+		return domain.ErrNotExistKey
+	}
 	task := tm.Tasks[id]
 	task.SetStatus("in-progress")
 	now := time.Now()
@@ -89,14 +89,14 @@ func (tm *TaskManager) Mark_in_progress(id int) error{
 	return nil
 }
 
-func (tm *TaskManager) Mark_done(id int) error{
-	if id < 0{
+func (tm *TaskManager) Mark_done(id int) error {
+	if id < 0 {
 		return domain.ErrWrongID
 	}
 	if _, exists := tm.Tasks[id]; exists {
-    } else {
-        return domain.ErrNotExistKey
-    }
+	} else {
+		return domain.ErrNotExistKey
+	}
 	task := tm.Tasks[id]
 	task.SetStatus("done")
 	now := time.Now()
@@ -106,6 +106,25 @@ func (tm *TaskManager) Mark_done(id int) error{
 
 	return nil
 }
+
+func (tm *TaskManager) MarkToDo(id int) error {
+	if id < 0 {
+		return domain.ErrWrongID
+	}
+	if _, exists := tm.Tasks[id]; exists {
+	} else {
+		return domain.ErrNotExistKey
+	}
+	task := tm.Tasks[id]
+	task.SetStatus("to-do")
+	now := time.Now()
+	task.SetUpdatedAt(now)
+
+	tm.Tasks[id] = task
+
+	return nil
+}
+
 
 func (tm *TaskManager) PrintTasks() {
 	if len(tm.Tasks) == 0 {
@@ -130,13 +149,12 @@ func (tm *TaskManager) PrintTasksFilter(status string) {
 	ids := sortingId(tm)
 
 	for _, id := range ids {
-		if tm.Tasks[id].GetStatus() == status{
-		task := tm.Tasks[id]
-		printAllAreas(task)
+		if tm.Tasks[id].GetStatus() == status {
+			task := tm.Tasks[id]
+			printAllAreas(task)
+		}
 	}
 }
-}
-
 
 func (tm *TaskManager) GetNextID() int {
 	return tm.nextID

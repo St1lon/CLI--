@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
-
 var ListToDoCmd = &cobra.Command{
 	Use:   "list-to-do",
 	Short: "Показать задачи которые нужно сделать",

@@ -7,11 +7,11 @@ import (
 )
 
 type Task struct {
-	id          int       `json:"id"`
-	description string    `json:"description"`
-	status      string    `json:"status"`
-	createdAt   time.Time `json:"createdAt"`
-	updatedAt   time.Time `json:"updatedAt"`
+	id          int
+	description string
+	status      string
+	createdAt   time.Time
+	updatedAt   time.Time
 }
 
 func (t *Task) GetID() int {
@@ -55,4 +55,3 @@ func (t *Task) SetCreatedAt(createdAt time.Time) {
 func (t *Task) SetUpdatedAt(updatedAt time.Time) {
 	t.updatedAt = updatedAt
 }
-

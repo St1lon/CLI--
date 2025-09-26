@@ -9,16 +9,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var MarkInProgressCmd = &cobra.Command{
-	Use:   "mark-in-progress <id>",
-	Short: "Отметить задачу как выполняемую",
-	Long: `Изменяет статус задачи на 'in-progress' (в процессе выполнения)
+var MarkToDo = &cobra.Command{
+	Use:   "mark-to-do <id>",
+	Short: "Отметить задачу как требующую выполнения",
+	Long: `Изменяет статус задачи на 'to-do' (ожидает выполнения)
 
 Аргументы:
   id  ID задачи для изменения статуса
 
 Пример:
-  tasker mark-in-progress 1  # Отмечает задачу №1 как выполняемую`,
+  tasker mark-to-do 1  # Отмечает задачу №1 как выполняемую`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskManager, err := storage.LoadJson()
@@ -31,7 +31,7 @@ var MarkInProgressCmd = &cobra.Command{
 			fmt.Println(domain.ErrWrongID)
 			return
 		}
-		err = taskManager.Mark_in_progress(val)
+		err = taskManager.MarkToDo(val)
 		if err != nil {
 			fmt.Println(err)
 			return

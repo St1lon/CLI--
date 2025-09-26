@@ -1,16 +1,8 @@
 package main
 
 import (
-	//"cli-track/internal/domain"
-	//"cli-track/internal/application/services"
-	//"cli-track/internal/application/services"
-	"cli-track/internal/domain"
-	"cli-track/internal/infrastructure/storage"
 	"cli-track/cmd/cli-task/command"
 	"fmt"
-	"strconv"
-
-	//"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -56,4 +48,5 @@ func init() {
 	rootCmd.AddCommand(command.ListToDoCmd)
 	rootCmd.AddCommand(command.ListInprogressCmd)
 	rootCmd.AddCommand(command.DeleteCmd)
+	rootCmd.AddCommand(command.MarkToDo)
 }

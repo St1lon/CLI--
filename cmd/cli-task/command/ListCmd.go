@@ -1,6 +1,5 @@
 package command
 
-
 import (
 	"cli-track/internal/infrastructure/storage"
 	"fmt"

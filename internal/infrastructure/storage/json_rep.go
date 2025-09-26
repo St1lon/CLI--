@@ -53,7 +53,7 @@ func SaveToJson(tm *services.TaskManager) error {
 func LoadJson() (*services.TaskManager, error) {
 	filename := "tasks.json"
 	tm := services.NewTaskManager()
-	
+
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		fmt.Println("Файл tasks.json не найден, начинаем с пустого списка задач")
 		return tm, nil
