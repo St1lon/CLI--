@@ -30,7 +30,7 @@ if (Test-Path $SourcePath) {
 
 $CurrentPath = [Environment]::GetEnvironmentVariable("PATH", $PathScope)
 if ($CurrentPath -notlike "*$InstallPath*") {
-    $NewPath = $CurrentPath + ";" + $InstallPath
+    $NewPath = $Curre   ntPath + ";" + $InstallPath
     [Environment]::SetEnvironmentVariable("PATH", $NewPath, $PathScope)
     Write-Host "Added to PATH" -ForegroundColor Green
 } else {
