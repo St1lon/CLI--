@@ -1,9 +1,7 @@
 package domain
 
 import (
-	//"fmt"
 	"time"
-	//"errors"
 )
 
 type Task struct {
