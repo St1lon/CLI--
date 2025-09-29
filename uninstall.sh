@@ -1,23 +1,31 @@
 #!/bin/bash
 
-# ================================================================
-# 🗑️ Быстрый деинсталлятор для Unix/Linux/macOS
-# ================================================================
+# Tasker CLI Uninstall Script for macOS/Linux
+# Usage: ./uninstall.sh [--global]
 
 set -e
 
-echo "🗑️ Деинсталляция CLI Task Manager (Tasker)"
-echo "========================================"
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+GRAY='\033[0;37m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
-# Функция для логирования
-log() {
-    echo "$(date '+%H:%M:%S') $1"
-}
+echo -e "${RED}Uninstalling Tasker CLI...${NC}"
 
-# Поиск и удаление исполняемого файла
-INSTALL_LOCATIONS=(
-    "/usr/local/bin/tasker"
-    "$HOME/.local/bin/tasker"
+# Determine install path
+if [[ "$1" == "--global" ]]; then
+    INSTALL_PATH="/usr/local/bin"
+    echo -e "${YELLOW}Removing from global location: $INSTALL_PATH${NC}"
+    SUDO_CMD="sudo"
+else
+    INSTALL_PATH="$HOME/.local/bin"
+    echo -e "${YELLOW}Removing from local location: $INSTALL_PATH${NC}"
+    SUDO_CMD=""
+fi
+
+BINARY_PATH="$INSTALL_PATH/tasker"
     "$HOME/bin/tasker"
     "./tasker"
 )
