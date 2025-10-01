@@ -26,45 +26,59 @@ else
 fi
 
 BINARY_PATH="$INSTALL_PATH/tasker"
-    "$HOME/bin/tasker"
-    "./tasker"
-)
 
-FOUND=false
-
-for location in "${INSTALL_LOCATIONS[@]}"; do
-    if [ -f "$location" ]; then
-        log "✅ Найден tasker в: $location"
-        rm -f "$location" && log "✅ Удален: $location" || log "❌ Ошибка удаления: $location"
-        FOUND=true
-    fi
-done
-
-# Поиск и удаление файлов данных
-DATA_LOCATIONS=(
-    "./tasks.json"
-    "$HOME/tasks.json"
-    "$HOME/.config/tasker/tasks.json"
-    "$HOME/.local/share/tasker/tasks.json"
-)
-
-for location in "${DATA_LOCATIONS[@]}"; do
-    if [ -f "$location" ]; then
-        read -p "🗂️ Найден файл данных: $location. Удалить? (y/N): " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -f "$location" && log "✅ Удален файл данных: $location"
-            # Удаляем пустые папки
-            rmdir "$(dirname "$location")" 2>/dev/null || true
-        fi
-    fi
-done
-
-if [ "$FOUND" = true ]; then
-    log "✅ Деинсталляция завершена успешно"
-    log "🔄 Перезагрузите терминал для обновления PATH"
+# Check if binary exists
+if [[ -f "$BINARY_PATH" ]]; then
+    echo -e "${CYAN}Removing tasker binary...${NC}"
+    $SUDO_CMD rm -f "$BINARY_PATH"
+    echo -e "${GREEN}✅ Binary removed: $BINARY_PATH${NC}"
 else
-    log "⚠️ Tasker не найден в стандартных локациях"
+    echo -e "${GRAY}Binary not found at: $BINARY_PATH${NC}"
 fi
 
-echo "🙏 Спасибо за использование CLI Task Manager!"
+# Remove from PATH (only for local installations)
+if [[ "$1" != "--global" ]]; then
+    SHELL_CONFIG=""
+    case $SHELL in
+        */bash)
+            SHELL_CONFIG="$HOME/.bashrc"
+            if [[ -f "$HOME/.bash_profile" ]]; then
+                SHELL_CONFIG="$HOME/.bash_profile"
+            fi
+            ;;
+        */zsh)
+            SHELL_CONFIG="$HOME/.zshrc"
+            ;;
+        */fish)
+            SHELL_CONFIG="$HOME/.config/fish/config.fish"
+            ;;
+    esac
+
+    if [[ -n "$SHELL_CONFIG" ]] && [[ -f "$SHELL_CONFIG" ]]; then
+        if grep -q "# Added by tasker installer" "$SHELL_CONFIG"; then
+            echo -e "${CYAN}Removing PATH entry from $SHELL_CONFIG...${NC}"
+            # Remove the tasker installer lines
+            sed -i.bak '/# Added by tasker installer/,/export PATH.*tasker/d' "$SHELL_CONFIG"
+            echo -e "${GREEN}✅ PATH entry removed${NC}"
+            echo -e "${YELLOW}Please restart your terminal or run: source $SHELL_CONFIG${NC}"
+        fi
+    fi
+fi
+
+# Optional: Remove tasks data (ask user)
+TASKS_FILE="$HOME/tasks.json"
+if [[ -f "$TASKS_FILE" ]]; then
+    echo ""
+    read -p "Do you want to remove task data file ($TASKS_FILE)? [y/N]: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        rm -f "$TASKS_FILE"
+        echo -e "${GREEN}✅ Task data removed: $TASKS_FILE${NC}"
+    else
+        echo -e "${GRAY}Task data preserved: $TASKS_FILE${NC}"
+    fi
+fi
+
+echo ""
+echo -e "${GREEN}✅ Uninstallation completed!${NC}"
+echo -e "${GRAY}Tasker CLI has been removed from your system.${NC}"

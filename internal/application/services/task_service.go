@@ -21,7 +21,10 @@ func NewTaskManager() *TaskManager {
 func (tm *TaskManager) AddTask(description, status string) error {
 
 	task := &domain.Task{}
-	task.SetID(tm.nextID)
+
+	// Используем следующий доступный ID
+	newID := tm.getNextAvailableID()
+	task.SetID(newID)
 	task.SetDescription(description)
 
 	err := task.SetStatus(status)
@@ -33,10 +36,27 @@ func (tm *TaskManager) AddTask(description, status string) error {
 	task.SetCreatedAt(now)
 	task.SetUpdatedAt(now)
 
-	tm.Tasks[tm.nextID] = task
-	tm.nextID++
+	tm.Tasks[newID] = task
+	tm.nextID = newID + 1
 
 	return nil
+}
+
+// getNextAvailableID возвращает следующий доступный ID
+func (tm *TaskManager) getNextAvailableID() int {
+	if len(tm.Tasks) == 0 {
+		return 1
+	}
+
+	// Проверяем, есть ли "дыры" в нумерации
+	for i := 1; i <= len(tm.Tasks)+1; i++ {
+		if _, exists := tm.Tasks[i]; !exists {
+			return i
+		}
+	}
+
+	// Если дыр нет, возвращаем следующий ID
+	return len(tm.Tasks) + 1
 }
 
 func (tm *TaskManager) UpdateTask(id int, description string) error {
@@ -62,12 +82,36 @@ func (tm *TaskManager) DeleteTask(id int) error {
 	if id < 0 {
 		return domain.ErrWrongID
 	}
-	if _, exists := tm.Tasks[id]; exists {
-		delete(tm.Tasks, id)
-	} else {
+	if _, exists := tm.Tasks[id]; !exists {
 		return domain.ErrNotExistKey
 	}
+
+	delete(tm.Tasks, id)
+
+	tm.reindexTasks()
+
 	return nil
+}
+
+func (tm *TaskManager) reindexTasks() {
+	if len(tm.Tasks) == 0 {
+		tm.nextID = 1
+		return
+	}
+
+	ids := sortingId(tm)
+
+	newTasks := make(map[int]*domain.Task)
+
+	for newID, oldID := range ids {
+		task := tm.Tasks[oldID]
+		task.SetID(newID + 1)
+		newTasks[newID+1] = task
+	}
+
+	tm.Tasks = newTasks
+
+	tm.nextID = len(newTasks) + 1
 }
 
 func (tm *TaskManager) Mark_in_progress(id int) error {
@@ -123,7 +167,6 @@ func (tm *TaskManager) MarkToDo(id int) error {
 
 	return nil
 }
-
 
 func (tm *TaskManager) PrintTasks() {
 	if len(tm.Tasks) == 0 {
